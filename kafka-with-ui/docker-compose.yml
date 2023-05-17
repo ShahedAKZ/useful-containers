@@ -1,7 +1,7 @@
 version: '3.5'
 services:
   kafka-broker:
-    image: confluentinc/cp-kafka:7.3.3
+    image: confluentinc/cp-kafka:7.4.0
     hostname: kafka-broker
     container_name: kafka-broker
     restart: unless-stopped
@@ -23,13 +23,15 @@ services:
       KAFKA_LISTENERS: 'PLAINTEXT://kafka-broker:29092,CONTROLLER://kafka-broker:29093,PLAINTEXT_HOST://0.0.0.0:9092'
       KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      # Replace CLUSTER_ID with a unique base64 UUID using "bin/kafka-storage.sh random-uuid" 
+      # See https://docs.confluent.io/kafka/operations-tools/kafka-tools.html#kafka-storage-sh
+      # Check https://github.com/confluentinc/cp-all-in-one/tree/7.4.x/cp-all-in-one-kraft
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
     volumes:
       - kafka-broker-data:/var/lib/kafka/data
-      - ./scripts/update_run.sh:/tmp/update_run.sh
-    command: "bash -c 'if [ ! -f /tmp/update_run.sh ]; then echo \"ERROR: Did you forget the update_run.sh file that came with this docker-compose.yml file?\" && exit 1 ; else chmod +x /tmp/update_run.sh && /tmp/update_run.sh && /etc/confluent/docker/run ; fi'"
 
   kafka-schema-registry:
-    image: confluentinc/cp-schema-registry:7.3.3
+    image: confluentinc/cp-schema-registry:7.4.0
     hostname: kafka-schema-registry
     container_name: kafka-schema-registry
     restart: unless-stopped
