@@ -23,6 +23,8 @@ services:
       KAFKA_LISTENERS: 'PLAINTEXT://kafka-broker:29092,CONTROLLER://kafka-broker:29093,PLAINTEXT_HOST://0.0.0.0:9092'
       KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LOG4J_ROOT_LOGLEVEL: WARN
+      KAFKA_TOOLS_LOG4J_LOGLEVEL: WARN
       # Replace CLUSTER_ID with a unique base64 UUID using "bin/kafka-storage.sh random-uuid" 
       # See https://docs.confluent.io/kafka/operations-tools/kafka-tools.html#kafka-storage-sh
       # Check https://github.com/confluentinc/cp-all-in-one/tree/7.4.x/cp-all-in-one-kraft
@@ -30,24 +32,24 @@ services:
     volumes:
       - kafka-broker-data:/var/lib/kafka/data
 
-  kafka-schema-registry:
-    image: confluentinc/cp-schema-registry:7.4.0
-    hostname: kafka-schema-registry
-    container_name: kafka-schema-registry
-    restart: unless-stopped
-    ports:
-      - 8085:8085
-    depends_on:
-      - kafka-broker
-    environment:
-      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka-broker:29092
-      SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL: PLAINTEXT
-      SCHEMA_REGISTRY_KAFKASTORE_TOPIC: _schemas
-      SCHEMA_REGISTRY_KAFKASTORE_TOPIC_REPLICATION_FACTOR: 1
-      SCHEMA_REGISTRY_HOST_NAME: kafka-schema-registry
-      SCHEMA_REGISTRY_LISTENERS: http://kafka-schema-registry:8085
-      SCHEMA_REGISTRY_SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: "http"
-      SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: WARN
+  # kafka-schema-registry:
+  #   image: confluentinc/cp-schema-registry:7.4.0
+  #   hostname: kafka-schema-registry
+  #   container_name: kafka-schema-registry
+  #   restart: unless-stopped
+  #   ports:
+  #     - 8085:8085
+  #   depends_on:
+  #     - kafka-broker
+  #   environment:
+  #     SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: PLAINTEXT://kafka-broker:29092
+  #     SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL: PLAINTEXT
+  #     SCHEMA_REGISTRY_KAFKASTORE_TOPIC: _schemas
+  #     SCHEMA_REGISTRY_KAFKASTORE_TOPIC_REPLICATION_FACTOR: 1
+  #     SCHEMA_REGISTRY_HOST_NAME: kafka-schema-registry
+  #     SCHEMA_REGISTRY_LISTENERS: http://kafka-schema-registry:8085
+  #     SCHEMA_REGISTRY_SCHEMA_REGISTRY_INTER_INSTANCE_PROTOCOL: "http"
+  #     SCHEMA_REGISTRY_LOG4J_ROOT_LOGLEVEL: WARN
 
   kafka-ui:
     image: provectuslabs/kafka-ui:v0.7.0
@@ -58,12 +60,12 @@ services:
       - 9090:8080
     depends_on:
       - kafka-broker
-      - kafka-schema-registry
+      # - kafka-schema-registry
     environment:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka-broker:29092
       KAFKA_CLUSTERS_0_METRICS_PORT: 9997
-      KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://kafka-schema-registry:8085
+      # KAFKA_CLUSTERS_0_SCHEMAREGISTRY: http://kafka-schema-registry:8085
       DYNAMIC_CONFIG_ENABLED: 'true'
       LOGGING_LEVEL_ROOT: warn
       LOGGING_LEVEL_COM_PROVECTUS: warn
